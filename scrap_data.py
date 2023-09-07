@@ -26,12 +26,26 @@ headers = {
 }
 page = requests.get(url, headers= headers)
 parsed_page = BeautifulSoup(page.text, 'html.parser')
-klasa = '2 LPa'
+baza = {}
+dni = parsed_page.find_all(string=re.compile('Zastępstwa w dniu'))
+for dzien in dni:
+    dzien = re.search('dniu (.+?)\n', dzien).group(1)
+    print(dzien)
+    baza[dzien] = {}
+print(baza)
+# if n_dzien != dzien:
+#     # del baza[dzien]
+#     dzien = n_dzien
+#     print(dzien)
+
+
+klasa = '2 RP'
 parsed_klasa = parsed_page.find_all(string=re.compile(klasa))
 for zastepstwo in parsed_klasa:
     zastepstwo = zastepstwo.parent.parent.contents
-    print('Lekcja: ' + ' '.join(zastepstwo[1].text.split()))
-    print('Opis: ' + ' '.join(zastepstwo[3].text.split()))
-    print('Zastępca: ' + ' '.join(zastepstwo[5].text.split()))
-    print('Uwagi: ' + ' '.join(zastepstwo[7].text.split()))
+    lekcja = 'Lekcja: ' + ' '.join(zastepstwo[1].text.split())
+    opis = 'Opis: ' + ' '.join(zastepstwo[3].text.split())
+    zastepca = 'Zastępca: ' + ' '.join(zastepstwo[5].text.split())
+    uwagi = 'Uwagi: ' + ' '.join(zastepstwo[7].text.split())
+
 # script = parsed_page.find('script', type='application/ld+json')
