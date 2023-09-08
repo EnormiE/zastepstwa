@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 import re
 import time
 from deepdiff import DeepDiff
+import copy
 
 url = 'https://zstk.lublin.eu/zastepstwa/index.php'
 headers = {
@@ -22,12 +23,12 @@ headers = {
     'Accept-Language': 'pl-PL,pl;q=0.9,en-US;q=0.8,en;q=0.7',
     'Connection': 'close'
 }
-baza = {}
+baza = {'07.09.2023 czwartek': {'4': {'opis': '2 RP(1) - Język angielski, 1', 'zastepca': 'Agnieszka Żurawska-Skarżycka', 'uwagi': ''}, '5': {'opis': '2 RP(1) - Język angielski, 301', 'zastepca': 'Agnieszka Pylak', 'uwagi': ''}, '9': {'opis': '2 RP - Uczniowie zwolnieni do domu', 'zastepca': '', 'uwagi': ''}}}
 
 klasa = '2 RP'
 
 while True:
-    n_baza = {}
+    n_baza = copy.deepcopy(baza)
     page = requests.get(url, headers=headers)
     parsed_page = BeautifulSoup(page.text, 'html.parser')
     dni = parsed_page.find_all(string=re.compile('Zastępstwa w dniu'))
@@ -45,11 +46,10 @@ while True:
             n_baza[dzien][lekcja]['zastepca'] = zastepca
             uwagi = ' '.join(zastepstwo[7].text.split())
             n_baza[dzien][lekcja]['uwagi'] = uwagi
-        if baza != n_baza:
-            print('NOWOŚĆ!')
-            diff = DeepDiff(baza, n_baza)
+        diff = DeepDiff(baza, n_baza, verbose_level=2)
+        if len(diff) > 0:
             print(diff)
-            baza = n_baza
+            baza = copy.deepcopy(n_baza)
     if len(baza) > 2:
         print('Wykryto więcej niż dwa dni w bazie, usuwam najstarszy z dni')
         first_key = next(iter(baza))
