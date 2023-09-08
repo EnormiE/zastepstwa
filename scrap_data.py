@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 import re
 # from datetime import datetime
 # import urllib.parse
+import time
 
 url = 'https://zstk.lublin.eu/zastepstwa/index.php'
 headers = {
@@ -24,28 +25,27 @@ headers = {
     'Accept-Language': 'pl-PL,pl;q=0.9,en-US;q=0.8,en;q=0.7',
     'Connection': 'close'
 }
-page = requests.get(url, headers= headers)
-parsed_page = BeautifulSoup(page.text, 'html.parser')
 baza = {}
-dni = parsed_page.find_all(string=re.compile('Zastępstwa w dniu'))
-for dzien in dni:
-    dzien = re.search('dniu (.+?)\n', dzien).group(1)
-    print(dzien)
-    baza[dzien] = {}
-print(baza)
-# if n_dzien != dzien:
-#     # del baza[dzien]
-#     dzien = n_dzien
-#     print(dzien)
-
 
 klasa = '2 RP'
-parsed_klasa = parsed_page.find_all(string=re.compile(klasa))
-for zastepstwo in parsed_klasa:
-    zastepstwo = zastepstwo.parent.parent.contents
-    lekcja = 'Lekcja: ' + ' '.join(zastepstwo[1].text.split())
-    opis = 'Opis: ' + ' '.join(zastepstwo[3].text.split())
-    zastepca = 'Zastępca: ' + ' '.join(zastepstwo[5].text.split())
-    uwagi = 'Uwagi: ' + ' '.join(zastepstwo[7].text.split())
 
-# script = parsed_page.find('script', type='application/ld+json')
+while(True):
+    page = requests.get(url, headers= headers)
+    parsed_page = BeautifulSoup(page.text, 'html.parser')
+    dni = parsed_page.find_all(string=re.compile('Zastępstwa w dniu'))
+    for dzien in dni:
+        dzien = re.search('dniu (.+?)\n', dzien).group(1)
+        baza[dzien] = {}
+        parsed_klasa = parsed_page.find_all(string=re.compile(klasa))
+        for zastepstwo in parsed_klasa:
+            zastepstwo = zastepstwo.parent.parent.contents
+            lekcja = ' '.join(zastepstwo[1].text.split())
+            baza[dzien][lekcja] = {}
+            opis = ' '.join(zastepstwo[3].text.split())
+            baza[dzien][lekcja]['opis'] = opis
+            zastepca = ' '.join(zastepstwo[5].text.split())
+            baza[dzien][lekcja]['zastepca'] = zastepca
+            uwagi = ' '.join(zastepstwo[7].text.split())
+            baza[dzien][lekcja]['uwagi'] = uwagi
+    print(baza)
+    time.sleep(300)
