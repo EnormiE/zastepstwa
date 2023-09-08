@@ -25,8 +25,8 @@ baza = {}
 
 klasa = '2 RP'
 
-while(True):
-    page = requests.get(url, headers= headers)
+while True:
+    page = requests.get(url, headers=headers)
     parsed_page = BeautifulSoup(page.text, 'html.parser')
     dni = parsed_page.find_all(string=re.compile('Zastępstwa w dniu'))
     for dzien in dni:
