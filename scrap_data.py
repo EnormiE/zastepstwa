@@ -1,10 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-# from unidecode import unidecode
-# import json
 import re
-# from datetime import datetime
-# import urllib.parse
 import time
 
 url = 'https://zstk.lublin.eu/zastepstwa/index.php'
