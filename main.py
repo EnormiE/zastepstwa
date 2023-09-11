@@ -13,7 +13,6 @@ import re
 import time
 from deepdiff import DeepDiff
 import copy
-import pprint
 
 def send_mail(notification):
     SCOPES = [
@@ -50,6 +49,22 @@ def send_mail(notification):
     except HTTPError as error:
         print(F'An error occurred: {error}')
         message = None
+
+def indent(string):
+    counter = '\n\t'
+    new_string = ''
+    start = 0
+    for match in re.finditer(r'({|}, )', string):
+        end, new_start = match.span()
+        new_string += string[start:end]
+        if match.group(0) == '}, ':
+            counter = counter[:-2]
+        rep = match.group(0) + str(counter)
+        new_string += rep
+        start = new_start
+        counter += '\t'
+    new_string += string[start:]
+    return new_string
 
 url = 'https://zstk.lublin.eu/zastepstwa/index.php'
 headers = {
@@ -95,7 +110,8 @@ while True:
             n_baza[dzien][lekcja]['uwagi'] = uwagi
         diff = DeepDiff(baza, n_baza, verbose_level=2)
         if len(diff) > 0:
-            diff = pprint.pformat(diff, width=150, sort_dicts=False)
+            diff = str(diff)
+            diff = indent(diff)
             notification.append(diff)
             baza = copy.deepcopy(n_baza)
     # send_mail(str(diff))
@@ -104,10 +120,9 @@ while True:
         for n in notification:
             all_n = all_n + '\n' + n
         print(all_n)
-        send_mail(all_n)
+        # send_mail(all_n)
     if len(baza) > 2:
         print('Wykryto więcej niż dwa dni w bazie, usuwam najstarszy z dni')
         first_key = next(iter(baza))
         first_value = baza.pop(first_key)
-    # print(baza)
     time.sleep(300)
