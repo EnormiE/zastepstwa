@@ -106,7 +106,7 @@ headers = {
 }
 baza = {}
 
-klasa = '2 RP'
+klasa = '5 IPa'
 
 while True:
     notification = []
