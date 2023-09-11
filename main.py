@@ -54,11 +54,29 @@ def indent(string):
     counter = '\n\t'
     new_string = ''
     start = 0
+    clues = [
+        "}, 'type_changes'",
+        "}, 'values_changed'",
+        "}, 'dictionary_item_added'",
+        "}, 'dictionary_item_removed'",
+        "}, 'iterable_item_added'",
+        "}, 'iterable_item_removed'",
+        "}, 'attribute_added'",
+        "}, 'attribute_removed'",
+        "}, 'set_item_added'",
+        "}, 'set_item_removed'",
+        "}, 'repetition_change'"
+    ]
     for match in re.finditer(r'({|}, )', string):
         end, new_start = match.span()
         new_string += string[start:end]
         if match.group(0) == '}, ':
             counter = counter[:-2]
+            for clue in clues:
+                if string[end: new_start + (len(clue) - 3)] == clue:
+                    # print(string[end: new_start + (len(clue) - 3)])
+                    counter = counter[:-1]
+                    continue
         rep = match.group(0) + str(counter)
         new_string += rep
         start = new_start
@@ -84,7 +102,7 @@ headers = {
     'Accept-Language': 'pl-PL,pl;q=0.9,en-US;q=0.8,en;q=0.7',
     'Connection': 'close'
 }
-baza = {'07.09.2023 czwartek': {'4': {'opis': '2 RP(1) - Język angielski, 1', 'zastepca': 'Agnieszka Żurawska-Skarżycka', 'uwagi': ''}, '5': {'opis': '2 RP(1) - Język angielski, 301', 'zastepca': 'Agnieszka Pylak', 'uwagi': ''}, '9': {'opis': '2 RP - Uczniowie zwolnieni do domu', 'zastepca': '', 'uwagi': ''}}, '08.09.2023 piątek': {'4': {'opis': '2 RP(1) - Język angielski, 1', 'zastepca': 'Agnieszka Żurawska-Skarżycka', 'uwagi': ''}, '5': {'opis': '2 RP(1) - Język angielski, 301', 'zastepca': 'Agnieszka Pylak', 'uwagi': ''}, '9': {'opis': '2 RP(1) - Język angielski, 301', 'zastepca': 'Agnieszka Pylak', 'uwagi': ''}}}
+baza = {}
 
 klasa = '2 RP'
 
@@ -119,10 +137,10 @@ while True:
         all_n = ''
         for n in notification:
             all_n = all_n + '\n' + n
-        print(all_n)
-        # send_mail(all_n)
+        # print(all_n)
+        send_mail(all_n)
     if len(baza) > 2:
-        print('Wykryto więcej niż dwa dni w bazie, usuwam najstarszy z dni')
+        # print('Wykryto więcej niż dwa dni w bazie, usuwam najstarszy z dni')
         first_key = next(iter(baza))
         first_value = baza.pop(first_key)
     time.sleep(300)
