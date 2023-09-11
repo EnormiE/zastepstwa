@@ -45,7 +45,7 @@ def send_mail(notification):
 
     try:
         message = (service.users().messages().send(userId="me", body=create_message).execute())
-        print(F'sent message to {message} Message Id: {message["id"]}')
+        print(F'sent message {message}')
     except HTTPError as error:
         print(F'An error occurred: {error}')
         message = None
@@ -67,7 +67,7 @@ def indent(string):
         "}, 'set_item_removed'",
         "}, 'repetition_change'"
     ]
-    for match in re.finditer(r'({|}, )', string):
+    for match in re.finditer(r"({|}, |', )", string):
         end, new_start = match.span()
         new_string += string[start:end]
         if match.group(0) == '}, ':
@@ -77,6 +77,8 @@ def indent(string):
                     # print(string[end: new_start + (len(clue) - 3)])
                     counter = counter[:-1]
                     continue
+        if match.group(0) == "', ":
+            counter = counter[:-1]
         rep = match.group(0) + str(counter)
         new_string += rep
         start = new_start
