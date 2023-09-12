@@ -104,8 +104,10 @@ headers = {
     'Accept-Language': 'pl-PL,pl;q=0.9,en-US;q=0.8,en;q=0.7',
     'Connection': 'close'
 }
+proxy_servers = {
+   'https': 'http://212.160.130.70:8080'
+}
 baza = {}
-
 klasa = '5 IPa'
 
 while True:
@@ -114,7 +116,7 @@ while True:
     page = ''
     while page == '':
         try:
-            page = requests.get(url, headers=headers, verify=False, allow_redirects=True, timeout=10)
+            page = requests.get(url, headers=headers, verify=False, allow_redirects=True, timeout=10, proxies=proxy_servers)
             break
         except requests.exceptions.ConnectTimeout:
             print("Timeout, retry in 5s")
