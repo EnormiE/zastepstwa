@@ -111,7 +111,19 @@ klasa = '5 IPa'
 while True:
     notification = []
     n_baza = copy.deepcopy(baza)
-    page = requests.get(url, headers=headers)
+    page = ''
+    while page == '':
+        try:
+            page = requests.get(url, headers=headers, verify=False, allow_redirects=True, timeout=10)
+            break
+        except requests.exceptions.ConnectTimeout:
+            print("Timeout, retry in 5s")
+            time.sleep(5)
+            continue
+        except requests.exceptions.ConnectionError:
+            print("Connection refused, retry in 30s")
+            time.sleep(30)
+            continue
     parsed_page = BeautifulSoup(page.text, 'html.parser')
     dni = parsed_page.find_all(string=re.compile('Zastępstwa w dniu'))
     for dzien in dni:
