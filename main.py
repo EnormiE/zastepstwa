@@ -74,7 +74,6 @@ def indent(string):
             counter = counter[:-2]
             for clue in clues:
                 if string[end: new_start + (len(clue) - 3)] == clue:
-                    # print(string[end: new_start + (len(clue) - 3)])
                     counter = counter[:-1]
                     continue
         if match.group(0) == "', ":
@@ -116,7 +115,7 @@ while True:
     page = ''
     while page == '':
         try:
-            page = requests.get(url, headers=headers, verify=False, allow_redirects=True, timeout=10, proxies=proxy_servers)
+            page = requests.get(url, headers=headers, allow_redirects=True, timeout=10, proxies=proxy_servers)
             break
         except requests.exceptions.ConnectTimeout:
             print("Timeout, retry in 5s")
@@ -153,10 +152,9 @@ while True:
         all_n = ''
         for n in notification:
             all_n = all_n + '\n' + n
-        # print(all_n)
         send_mail(all_n)
     if len(baza) > 2:
-        # print('Wykryto więcej niż dwa dni w bazie, usuwam najstarszy z dni')
+        print('Wykryto więcej niż dwa dni w bazie, usuwam najstarszy z dni')
         first_key = next(iter(baza))
         first_value = baza.pop(first_key)
     time.sleep(300)
